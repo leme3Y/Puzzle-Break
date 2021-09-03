@@ -11,11 +11,11 @@ GameObject:
   - component: {fileID: 3068425552412559724}
   - component: {fileID: 3068425552412559727}
   - component: {fileID: 3068425552412559725}
-  - component: {fileID: 2704114418728434674}
   - component: {fileID: 1612785473150916399}
+  - component: {fileID: -6788333575566094033}
   m_Layer: 0
   m_Name: Ball
-  m_TagString: Untagged
+  m_TagString: Ball
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -110,9 +110,23 @@ BoxCollider2D:
     adaptiveTiling: 0
   m_AutoTiling: 0
   serializedVersion: 2
-  m_Size: {x: 0.3, y: 0.3}
+  m_Size: {x: 0.5, y: 0.5}
   m_EdgeRadius: 0
---- !u!50 &2704114418728434674
+--- !u!114 &1612785473150916399
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3068425552412559726}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: eff3d157a388eba4586d63008aa4f43b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _rigidbody2D: {fileID: 0}
+  _color: 0
+--- !u!50 &-6788333575566094033
 Rigidbody2D:
   serializedVersion: 4
   m_ObjectHideFlags: 0
@@ -133,15 +147,3 @@ Rigidbody2D:
   m_SleepingMode: 1
   m_CollisionDetection: 0
   m_Constraints: 7
---- !u!114 &1612785473150916399
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3068425552412559726}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: eff3d157a388eba4586d63008aa4f43b, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 

@@ -816,6 +816,8 @@ MonoBehaviour:
   - {fileID: 4818138639214187613, guid: 93f237771a8e4cb4091d247e9826bd5b, type: 3}
   - {fileID: 4818138639214187613, guid: e2918cec5777d55479ca8fa6c9cebe3e, type: 3}
   - {fileID: 4818138639214187613, guid: b0cc63775c3c71b4699de1875729f817, type: 3}
+  _canvas: {fileID: 690606916}
+  _prefabComboText: {fileID: 4792906222458927739, guid: 1930b4b1d9f9671459b2abae48732629, type: 3}
   _intervalTimeOfCombo: 1.5
 --- !u!4 &1987773136
 Transform:

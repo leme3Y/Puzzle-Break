@@ -1,16 +1,20 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-
+using UnityEngine.UI;
 
 public class BallZone : MonoBehaviour
 {
+#pragma warning disable IDE0044
     // config params
     [SerializeField] int _zoneHeight;
     [SerializeField] int _zoneWidth;
     [SerializeField] GameObject[] _prefabBalls;
+    [SerializeField] Canvas _canvas;
+    [SerializeField] GameObject _prefabComboText;
     // the interval time of combo in second
-    [SerializeField] private float _intervalTimeOfCombo;
+    [SerializeField] float _intervalTimeOfCombo;
+#pragma warning restore IDE0044
 
     // state variables
     private int _combos;
@@ -18,6 +22,7 @@ public class BallZone : MonoBehaviour
 
     public int ZoneHeight { get => _zoneHeight; set => _zoneHeight = value; }
     public int ZoneWidth { get => _zoneWidth; set => _zoneWidth = value; }
+    public int Combos { get => _combos; set => _combos = value; }
 
     // Start is called before the first frame update
     void Start()
@@ -135,6 +140,7 @@ public class BallZone : MonoBehaviour
         // sort balls's index from ball position
         for (int i = 0; i < balls.Length; i++)
         {
+            balls[i].IsCheck = true;
             var position = balls[i].ReturnPos();
             int index = (int)position.x + ((int)position.y) * _zoneWidth;
             sortBallsByPos[index] = balls[i];
@@ -154,7 +160,7 @@ public class BallZone : MonoBehaviour
             }
         }
 
-
+        // finalList.cout > 0 than destroy ball, if not reset combos to 0 and turn off balls.IsCheck
         if (finalList.Count > 0)
         {
             _removeSetAll = new SortedSet<int>();
@@ -163,6 +169,10 @@ public class BallZone : MonoBehaviour
         else
         {
             _combos = 0;
+            for (int i = 0; i < balls.Length; i++)
+            {
+                balls[i].IsCheck = false;
+            }
         }
     }
 
@@ -230,6 +240,7 @@ public class BallZone : MonoBehaviour
         }
     }
 
+    // check list and remove the ball that not more than 3 ball in one line
     private void RemoveNotLine(Ball[] balls, List<SortedSet<int>> destroyList)
     {
         foreach (var set in destroyList)
@@ -237,7 +248,7 @@ public class BallZone : MonoBehaviour
             // create a temp set for remove another set if it necessary
             var removeSet = new HashSet<int>();
 
-            // check list and remove the ball that not more than 3 ball in a line
+            // check list and remove the ball that not more than 3 ball in one line
             foreach (int groupIndex in set)
             {
                 var roundH = new int[] { 1, 2, -1, -2 };
@@ -253,12 +264,14 @@ public class BallZone : MonoBehaviour
                     {
                         continue;
                     }
+
                     try
                     {
                         if (balls[groupIndex].Color == balls[groupIndex + roundH[hI]].Color)
                         {
                             ballsInline++;
-                            if (balls[groupIndex].Color == balls[groupIndex + roundH[hI + 1]].Color)
+                            if (!(roundH[hI] == 1 && groupIndex % _zoneWidth == _zoneWidth - 2) &&
+                                balls[groupIndex].Color == balls[groupIndex + roundH[hI + 1]].Color)
                             {
                                 ballsInline++;
                             }
@@ -308,15 +321,16 @@ public class BallZone : MonoBehaviour
         }
     }
 
-
+    // destroy balls if it can and put new ball after
     IEnumerator DestroyBalls2D(Ball[] balls, List<SortedSet<int>> finalList, float second)
     {
         foreach (var index in finalList[0])
         {
             _removeSetAll.Add(index);
-            Destroy(balls[index].gameObject);
+            balls[index].transform.parent.gameObject.SetActive(false);
+            Destroy(balls[index].transform.parent.gameObject);
         }
-        Debug.Log(++_combos + " combo!!");
+        CreateComboText();
         finalList.RemoveAt(0);
 
         yield return new WaitForSeconds(second);
@@ -352,31 +366,47 @@ public class BallZone : MonoBehaviour
                 }
                 if (index % _zoneWidth == i % _zoneWidth)
                 {
-                    var position = ballsRemained[i].transform.position;
-                    position.y -= 1f;
-                    ballsRemained[i].transform.position = position;
+                    ballsRemained[i].MoveDown();
                 }
             }
         }
 
         // create new balls
+        var putPos = new int[_zoneWidth];
+
         foreach (var index in _removeSetAll)
         {
             var colorCode = Random.Range(0, _prefabBalls.Length);
             var ball = Instantiate(
                     _prefabBalls[colorCode],
-                    new Vector2(index % _zoneWidth + 0.5f, tops[index % _zoneWidth] + 0.5f),
+                    new Vector2(index % _zoneWidth + 0.5f, _zoneHeight - 3 + 0.5f + putPos[index % _zoneWidth]),
                     new Quaternion(0, 0, 0, 0),
                     transform
                     );
-            tops[index % _zoneWidth]++;
-
-            // set ball color code
-            ball.GetComponentInChildren<Ball>().Color =
+            
+            // set ball color code and move ball down
+            var ballTemp = ball.GetComponentInChildren<Ball>();
+            ballTemp.Color =
                 (Color.Color)System.Enum.ToObject(typeof(Color.Color), colorCode);
+            ballTemp.MoveDown(_zoneHeight - 3 - tops[index % _zoneWidth] + putPos[index % _zoneWidth]);
+
+            tops[index % _zoneWidth]++;
+            putPos[index % _zoneWidth]++;
         }
 
         // check lines again
+        // need some time to let ball down move
+        StartCoroutine(WaitToCheckLines());
+    }
+
+    IEnumerator WaitToCheckLines()
+    {
+        yield return new WaitForSeconds(_intervalTimeOfCombo);
         CheckLines();
+    }
+
+    private void CreateComboText()
+    {
+        Instantiate(_prefabComboText, _canvas.transform).GetComponent<Text>();
     }
 }

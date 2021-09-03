@@ -6,7 +6,6 @@ public class GameSystem : MonoBehaviour
 {
     // cached referece
     private BallZone _ballZone;
-
     private void Start()
     {
         _ballZone = FindObjectOfType<BallZone>();

@@ -4,17 +4,19 @@ using UnityEngine;
 
 public class Cursor : MonoBehaviour
 {
+#pragma warning disable IDE0044
     // config params
     [SerializeField] GameSystem _gameSystem;
 
     // cached references
-    GameObject _ballHeld;
+    Ball _ballHeld;
     [SerializeField] BallZone _ballZone;
+#pragma warning restore IDE0044
 
     // state variables
     Vector2 _lastBallPos;
 
-    public GameObject BallHeld { get => _ballHeld; set => _ballHeld = value; }
+    public Ball BallHeld { get => _ballHeld; set => _ballHeld = value; }
     public Vector2 LastBallPos { get => _lastBallPos; set => _lastBallPos = value; }
 
 
@@ -33,8 +35,10 @@ public class Cursor : MonoBehaviour
 
     private void ReleaseBall()
     {
-        _ballHeld.transform.position = _lastBallPos;
-        _ballHeld.transform.SetParent(_ballZone.transform);
+        _ballHeld.gameObject.tag = "Ball";
+        _ballHeld.transform.parent.position = _lastBallPos;
+        _ballHeld.TargetPos = _lastBallPos;
+        _ballHeld.transform.parent.SetParent(_ballZone.transform);
         _ballHeld = null;
         _lastBallPos = new Vector2();
     }
